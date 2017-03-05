@@ -23,40 +23,6 @@ class Player
 
   end
 
-  def make_guess
-
-    case @type
-    when :HUMAN
-      return make_guess_as_human
-    when :AI
-      return make_guess_as_ai
-    end
-
-  end
-
-  private
-
-  def get_code_from_player
-
-    puts "You need to make a code"
-    puts ""
-    return self.make_guess
-
-  end
-
-  def ai_make_code
-
-    new_code = Array.new
-    all_pegs = Board.All_pegs
-
-    4.times {
-      new_code.push(all_pegs[rand(all_pegs.size-1)])
-    }
-
-    return new_code
-
-  end
-
   def make_guess_as_human
     guess = nil
 
@@ -82,11 +48,7 @@ class Player
         puts "#{current_guess.Colour}"
       }
 
-      puts "Is this correct?"
-      print "|"
-      guess.each { |guess_peg|
-        print " #{guess_peg.Colour} |"
-      }
+      print_confirmation_message(guess)
       puts ""
       puts "(1)yes | (2)No"
       case gets.chomp.downcase
@@ -100,11 +62,73 @@ class Player
     return guess
   end
 
-  def make_guess_as_ai
+  def make_guess_as_ai(code)
 
-    return[Board.Red_peg,Board.Red_peg,Board.Red_peg,Board.Red_peg]
+    if(@ai_guess == nil)
+      set_up_ai_array
+    end
+
+    @ai_guess.each_with_index { |peg, index|
+      if(@locked_indices.include?(index))
+        next
+      end
+
+      if(code[index] == peg)
+        @locked_indices.push(index)
+      else
+        next_guess = nil
+        loop{
+          previous_guess = @ai_guess[index]
+          next_guess = Board.All_pegs[rand(5)]
+          break if previous_guess != next_guess
+        }
+        @ai_guess[index] = next_guess
+      end
+    }
+
+    result = Array.new
+    @ai_guess.each { |peg|
+      result.push(peg)
+    }
+    return result
+  end
+
+  private
+
+  def get_code_from_player
+
+    puts "You need to make a code"
+    puts ""
+    return self.make_guess_as_human
 
   end
 
+  def ai_make_code
 
+    new_code = Array.new
+    all_pegs = Board.All_pegs
+
+    4.times {
+      new_code.push(all_pegs[rand(all_pegs.size-1)])
+    }
+
+    return new_code
+
+  end
+
+  def print_confirmation_message(guess)
+    puts "Is this correct?"
+    print "|"
+    guess.each { |guess_peg|
+      print " #{guess_peg.Colour} |"
+    }
+  end
+
+  def set_up_ai_array
+      @ai_guess = Array.new
+      4.times {
+        @ai_guess.push(nil)
+      }
+      @locked_indices = Array.new
+    end
 end

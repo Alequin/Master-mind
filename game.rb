@@ -66,7 +66,7 @@ class Game
 
       case gets.chomp
       when "1"
-        @Game_board.push_guess(@Code_breaker.make_guess)
+        @Game_board.push_guess(@Code_breaker.make_guess_as_human)
         break
       when "2"
         @Game_board.print_board
@@ -78,9 +78,7 @@ class Game
   end
 
   def run_ai_guess_round
-
-    @Game_board.push_guess(@Code_breaker.make_guess)
-
+    @Game_board.push_guess(@Code_breaker.make_guess_as_ai(@Game_board.Code))
   end
 
 end

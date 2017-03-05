@@ -1,6 +1,6 @@
 class Board
 
-  attr_reader :code, :guesses
+  attr_reader :Code, :guesses
 
   class Pegs
 
@@ -89,6 +89,16 @@ class Board
     @guess_results.push(compare_guess_and_code(guess))
   end
 
+  def print_guesses
+    index = @guesses.size-1
+    while(index >= 0)
+      @guesses[index].each { |pegs|
+        puts pegs.Colour
+      }
+      index -= 1
+    end
+  end
+
   def print_board
 
     index = @guesses.size-1
@@ -113,7 +123,6 @@ class Board
     result = @guess_results[@guess_results.size-1].all? { |value| value == @@Red }
     return result
   end
-
 
   private
 
@@ -176,7 +185,4 @@ class Board
 
     return result
   end
-
-
-
 end
