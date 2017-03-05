@@ -61,6 +61,13 @@ class Board
     return @@All_pegs
   end
 
+  def self.print_peg_options
+    puts "| "
+    @@All_pegs.each_with_index { |peg, index|
+      print "#{index+1}:#{peg.Colour} | "
+    }
+  end
+
   @@Blank = "blank"
   @@Red = "red"
   @@White = "white"
@@ -93,19 +100,20 @@ class Board
       guess_string = make_board_string(current_guess)
       result_of_guess_string = make_board_string(@guess_results[index])
 
+      puts "Round #{index+1}:"
       puts "Guess: #{guess_string}"
       puts "Result: #{result_of_guess_string}"
       puts "------------------------------------------------"
 
       index -= 1
     end
-
-    def win?
-      result = @guess_results[@guess_results.size-1].all? { |value| value == @@Red }
-      return result
-    end
-
   end
+
+  def win?
+    result = @guess_results[@guess_results.size-1].all? { |value| value == @@Red }
+    return result
+  end
+
 
   private
 

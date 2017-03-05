@@ -23,8 +23,9 @@ class Game
     puts "The code has been created. Let the game Start"
 
     round = 1
+    win = false
     while(round <= @@TOTAL_ROUNDS)
-      puts "Round #{round}"
+      puts "Round #{round}/#{@@TOTAL_ROUNDS}"
       case @Code_breaker.type
       when :HUMAN
         run_human_guess_round
@@ -32,16 +33,27 @@ class Game
         run_ai_guess_round
       end
 
-      @Game_board.print_board
+      if(@Code_breaker.type == :HUMAN)
+        @Game_board.print_board
+      end
 
       if(@Game_board.win?)
-        puts "Congratulations, you figured out the code"
+        win = true
         break
       end
       round += 1
 
     end
 
+    if(@Code_breaker.type == :AI)
+      @Game_board.print_board
+    end
+
+    if(win)
+      puts "Congratulations, you figured out the code"
+    else
+      puts "Sorry you ran out of attempts"
+    end
   end
 
   private
@@ -67,10 +79,8 @@ class Game
 
   def run_ai_guess_round
 
+    @Game_board.push_guess(@Code_breaker.make_guess)
+
   end
 
 end
-
-x = Game.new(Player.new("James", :HUMAN), Player.new("Not James", :AI))
-
-x.run_game_loop
