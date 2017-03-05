@@ -49,7 +49,7 @@ class Board
   end
 
   def initialize
-    @guesses ] Array.new
+    @guesses = Array.new
   end
 
   #Takes an array of four pegs to act as the code
@@ -64,7 +64,13 @@ class Board
   end
 
   def print_board
-    
+
+
+
+  end
+
+  def test_compare_method(guess)
+    p compare_guess_and_code(guess)
   end
 
   private
@@ -74,6 +80,52 @@ class Board
     if(to_check.size != 4 || !to_check.all?{|peg| peg.class == Pegs})
       raise ArgumentError, "The input should be an array of four peg objects"
     end
+  end
+
+  def compare_guess_and_code(guess)
+    input_correct?(guess)
+
+    blank = "blank"
+    red = "red"
+    white = "white"
+    result_index = 0;
+    result = Array.new
+    index_to_ignore_guess = Array.new
+    index_to_ignore_code = Array.new
+
+    for i in 0..@Code.size-1
+      if(@Code[i] == guess[i])
+        puts "push"
+        result.push(red)
+        index_to_ignore_guess.push(i)
+        index_to_ignore_code.push(i)
+      end
+    end
+
+    guess.each_with_index { |guess_peg, guess_index|
+      if(index_to_ignore_guess.include?(guess_index))
+        next
+      end
+      @Code.each_with_index {|code_peg, code_index|
+        if(index_to_ignore_code.include?(code_index))
+          next
+        end
+        puts
+        if(guess_peg == code_peg)
+          result.push(white)
+          index_to_ignore_guess.push(guess_index)
+          index_to_ignore_code.push(code_index)
+          break
+        end
+      }
+    }
+
+    while(result.size < 4)
+      result.push(blank)
+    end
+
+    return result
+
   end
 
 end
