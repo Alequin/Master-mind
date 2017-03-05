@@ -1,3 +1,5 @@
+require_relative 'player'
+
 class Game
 
   @@TOTAL_ROUNDS = 12
@@ -22,7 +24,7 @@ class Game
 
     round = 1
     while(round <= @@TOTAL_ROUNDS)
-
+      puts "Round #{round}"
       case @Code_breaker.type
       when :HUMAN
         run_human_guess_round
@@ -30,7 +32,13 @@ class Game
         run_ai_guess_round
       end
 
+      @Game_board.print_board
 
+      if(@Game_board.win?)
+        puts "Congratulations, you figured out the code"
+        break
+      end
+      round += 1
 
     end
 
@@ -40,7 +48,20 @@ class Game
 
   def run_human_guess_round
 
+    loop{
+      puts "What would you like to do?"
+      puts "(1) make guess (2) view board"
 
+      case gets.chomp
+      when "1"
+        @Game_board.push_guess(@Code_breaker.make_guess)
+        break
+      when "2"
+        @Game_board.print_board
+      else
+        puts "Sorry that input was not valid"
+      end
+    }
 
   end
 
@@ -48,6 +69,8 @@ class Game
 
   end
 
-
-
 end
+
+x = Game.new(Player.new("James", :HUMAN), Player.new("Not James", :AI))
+
+x.run_game_loop

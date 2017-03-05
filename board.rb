@@ -10,6 +10,19 @@ class Board
       @Colour = colour
     end
 
+    # Converts an array of Pegs to an array of strings which represent the colour
+    # of the pegs
+    def self.change_pegs_to_strings(array_of_pegs)
+
+      string_array = Array.new
+      array_of_pegs.each { |peg|
+        string_array.push(peg.Colour)
+      }
+
+      return string_array
+
+    end
+
   end
 
   @@Red_peg = Pegs.new("Red")
@@ -48,8 +61,13 @@ class Board
     return @@All_pegs
   end
 
+  @@Blank = "blank"
+  @@Red = "red"
+  @@White = "white"
+
   def initialize
     @guesses = Array.new
+    @guess_results = Array.new
   end
 
   #Takes an array of four pegs to act as the code
@@ -58,19 +76,35 @@ class Board
     @Code = code
   end
 
-  def add_guess(guess)
+  def push_guess(guess)
     input_correct?(guess)
     @guesses.push(guess)
+    @guess_results.push(compare_guess_and_code(guess))
   end
 
   def print_board
 
+    index = @guesses.size-1
+    puts "Guesses"
+    puts "------------------------------------------------"
+    while(index >= 0)
 
+      current_guess = Pegs.change_pegs_to_strings(@guesses[index])
+      guess_string = make_board_string(current_guess)
+      result_of_guess_string = make_board_string(@guess_results[index])
 
-  end
+      puts "Guess: #{guess_string}"
+      puts "Result: #{result_of_guess_string}"
+      puts "------------------------------------------------"
 
-  def test_compare_method(guess)
-    p compare_guess_and_code(guess)
+      index -= 1
+    end
+
+    def win?
+      result = @guess_results[@guess_results.size-1].all? { |value| value == @@Red }
+      return result
+    end
+
   end
 
   private
@@ -85,9 +119,6 @@ class Board
   def compare_guess_and_code(guess)
     input_correct?(guess)
 
-    blank = "blank"
-    red = "red"
-    white = "white"
     result_index = 0;
     result = Array.new
     index_to_ignore_guess = Array.new
@@ -95,8 +126,7 @@ class Board
 
     for i in 0..@Code.size-1
       if(@Code[i] == guess[i])
-        puts "push"
-        result.push(red)
+        result.push(@@Red)
         index_to_ignore_guess.push(i)
         index_to_ignore_code.push(i)
       end
@@ -110,9 +140,8 @@ class Board
         if(index_to_ignore_code.include?(code_index))
           next
         end
-        puts
         if(guess_peg == code_peg)
-          result.push(white)
+          result.push(@@White)
           index_to_ignore_guess.push(guess_index)
           index_to_ignore_code.push(code_index)
           break
@@ -121,11 +150,25 @@ class Board
     }
 
     while(result.size < 4)
-      result.push(blank)
+      result.push(@@Blank)
     end
 
     return result
 
   end
+
+  def make_board_string(array)
+    result = ""
+    array.each_with_index { |string, i|
+      result += "#{string} "
+      if(i < array.size-1)
+        result += "| "
+      end
+    }
+
+    return result
+  end
+
+
 
 end
